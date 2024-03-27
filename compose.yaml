@@ -2,10 +2,28 @@ version: "3.8"
 services:
   web:
     build: .
+    depends_on:
+      - mariadb
+    restart: 'always'
     ports:
       - "8000:80"
+    links:
+      - mariadb
     develop:
       watch:
         - action: sync
           path: .
           target: /var/www/html
+  mariadb:
+    image: "mariadb:${MARIADB_VERSION}"
+    restart: 'always'
+    volumes:
+      - db-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MYSQL_DATABASE: "${MYSQL_DATABASE}"
+      MYSQL_USER: "${MYSQL_USER}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+
+volumes:
+  db-data:
